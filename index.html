@@ -3,45 +3,45 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PMX Web Demo</title>
+  <title>PMX Demo Client</title>
   <style>
     :root {
-      --bg: #f4efe5;
-      --panel: rgba(255, 251, 245, 0.94);
-      --ink: #1f1b16;
-      --muted: #6f675d;
+      --paper: #f7f2ea;
+      --panel: rgba(255, 252, 246, 0.95);
+      --ink: #201a14;
+      --muted: #70675d;
       --accent: #0d7c66;
-      --accent-2: #d7a93b;
-      --line: rgba(66, 52, 36, 0.14);
-      --shadow: 0 22px 60px rgba(52, 37, 15, 0.12);
+      --gold: #d1a441;
+      --line: rgba(72, 56, 37, 0.14);
+      --shadow: 0 24px 70px rgba(50, 34, 16, 0.14);
     }
 
     * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; }
+    html, body { margin: 0; min-height: 100%; }
     body {
       font-family: Georgia, "Times New Roman", serif;
       color: var(--ink);
       background:
-        radial-gradient(circle at top left, rgba(215, 169, 59, 0.18), transparent 28%),
-        radial-gradient(circle at bottom right, rgba(13, 124, 102, 0.18), transparent 34%),
-        linear-gradient(135deg, #f8f2e9, #efe7da 58%, #e6dccb);
+        radial-gradient(circle at top left, rgba(13, 124, 102, 0.12), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(209, 164, 65, 0.17), transparent 34%),
+        linear-gradient(135deg, #f8f3ea, #eee4d5 58%, #e7dbca);
     }
 
     .shell {
       display: grid;
-      grid-template-columns: 420px 1fr;
+      grid-template-columns: 430px 1fr;
       gap: 20px;
-      height: 100vh;
+      min-height: 100vh;
       padding: 18px;
     }
 
-    .panel, .viewer {
+    .panel, .stage {
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 24px;
+      border-radius: 26px;
       box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
       overflow: hidden;
+      backdrop-filter: blur(10px);
     }
 
     .panel {
@@ -49,49 +49,63 @@
       flex-direction: column;
     }
 
-    .panel-header {
-      padding: 22px 24px 12px;
+    .panel-head {
+      padding: 24px 24px 14px;
       border-bottom: 1px solid var(--line);
       background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0));
     }
 
     .eyebrow {
+      margin-bottom: 10px;
+      color: var(--accent);
       font: 700 12px/1.2 "Courier New", monospace;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 10px;
     }
 
     h1 {
       margin: 0 0 8px;
       font-size: 28px;
-      line-height: 1.05;
+      line-height: 1.04;
     }
 
-    .subtitle {
+    .summary {
       margin: 0;
       color: var(--muted);
       font-size: 15px;
-      line-height: 1.45;
+      line-height: 1.5;
     }
 
     .panel-body {
       padding: 22px 24px;
-      overflow: auto;
       display: flex;
       flex-direction: column;
       gap: 18px;
+      overflow: auto;
     }
 
-    .route-box {
+    .badge {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      background: rgba(209, 164, 65, 0.17);
+      color: #93660f;
+      font: 700 12px/1.2 "Courier New", monospace;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .box {
       padding: 14px 16px;
       border-radius: 16px;
-      background: rgba(13, 124, 102, 0.08);
-      border: 1px solid rgba(13, 124, 102, 0.16);
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.55);
     }
 
-    .route-label {
+    .box-label {
       display: block;
       margin-bottom: 8px;
       color: var(--muted);
@@ -100,11 +114,9 @@
       text-transform: uppercase;
     }
 
-    .route-link {
+    .box-value {
       font: 700 15px/1.4 "Courier New", monospace;
-      color: var(--ink);
-      text-decoration: none;
-      word-break: break-all;
+      word-break: break-word;
     }
 
     .buttons {
@@ -113,40 +125,26 @@
       flex-wrap: wrap;
     }
 
-    button, .button-link {
+    button {
       appearance: none;
       border: 1px solid transparent;
-      background: var(--ink);
-      color: #fffdf8;
       border-radius: 999px;
       padding: 11px 16px;
+      cursor: pointer;
+      color: #fffdfa;
+      background: var(--ink);
       font: 700 13px/1.2 "Courier New", monospace;
       letter-spacing: 0.04em;
-      cursor: pointer;
-      text-decoration: none;
-      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+      transition: transform 120ms ease, opacity 120ms ease;
     }
 
-    button.secondary, .button-link.secondary {
+    button.secondary {
       background: transparent;
       color: var(--ink);
       border-color: var(--line);
     }
 
-    button:hover, .button-link:hover { transform: translateY(-1px); }
-
-    .kicker {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(215, 169, 59, 0.16);
-      color: #8b6211;
-      font: 700 12px/1.2 "Courier New", monospace;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
+    button:hover { transform: translateY(-1px); }
 
     .section h2 {
       margin: 0 0 10px;
@@ -157,49 +155,54 @@
     .section p {
       margin: 0;
       color: var(--muted);
-      line-height: 1.55;
       font-size: 15px;
+      line-height: 1.55;
     }
 
     .section ul {
       margin: 10px 0 0;
       padding-left: 18px;
-      color: var(--ink);
-      line-height: 1.5;
       font-size: 15px;
+      line-height: 1.5;
     }
 
     .section li + li { margin-top: 6px; }
 
-    .viewer {
+    .footnote {
+      padding-top: 10px;
+      border-top: 1px dashed var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .stage {
       display: grid;
       grid-template-rows: auto 1fr;
       min-width: 0;
     }
 
-    .viewer-header {
+    .stage-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 16px;
       padding: 16px 18px;
       border-bottom: 1px solid var(--line);
-      background: linear-gradient(90deg, rgba(255,255,255,0.4), rgba(255,255,255,0));
+      background: linear-gradient(90deg, rgba(255,255,255,0.45), rgba(255,255,255,0));
     }
 
-    .viewer-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    .stage-meta {
       min-width: 0;
     }
 
-    .viewer-title {
-      margin: 0;
+    .stage-title {
+      margin: 0 0 6px;
       font-size: 20px;
       line-height: 1.1;
     }
 
-    .viewer-subtitle {
+    .stage-subtitle {
       color: var(--muted);
       font: 700 12px/1.3 "Courier New", monospace;
       letter-spacing: 0.08em;
@@ -209,35 +212,40 @@
       text-overflow: ellipsis;
     }
 
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      background: #fff;
+    .stage-body {
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0));
     }
 
-    .footer-note {
-      padding-top: 8px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
-      border-top: 1px dashed var(--line);
+    .frame {
+      width: 100%;
+      height: 100%;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.4);
+    }
+
+    .frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #fff;
     }
 
     @media (max-width: 1100px) {
       .shell {
         grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;
-        height: auto;
-        min-height: 100vh;
       }
 
-      .panel {
-        max-height: none;
-      }
-
-      .viewer {
-        min-height: 70vh;
+      .stage {
+        min-height: 72vh;
       }
     }
   </style>
@@ -245,23 +253,22 @@
 <body>
   <div class="shell">
     <aside class="panel">
-      <div class="panel-header">
-        <div class="eyebrow">Client Demo Controller</div>
-        <h1 id="slide-title">PMX Web Demo</h1>
-        <p class="subtitle" id="slide-summary"></p>
+      <div class="panel-head">
+        <div class="eyebrow">Standalone Client Demo</div>
+        <h1 id="slide-title">PMX Demo</h1>
+        <p class="summary" id="slide-summary"></p>
       </div>
       <div class="panel-body">
-        <div class="kicker" id="slide-index">Étape 1 / 1</div>
+        <div class="badge" id="slide-index">Étape 1 / 1</div>
 
-        <div class="route-box">
-          <span class="route-label">Route en direct</span>
-          <a class="route-link" id="slide-route" href="#" target="_blank" rel="noreferrer"></a>
+        <div class="box">
+          <span class="box-label">Écran représenté</span>
+          <div class="box-value" id="slide-route"></div>
         </div>
 
         <div class="buttons">
           <button id="prev-btn" class="secondary">← Précédent</button>
           <button id="next-btn">Suivant →</button>
-          <a id="open-btn" class="button-link secondary" href="#" target="_blank" rel="noreferrer">Ouvrir en onglet</a>
         </div>
 
         <section class="section">
@@ -279,25 +286,25 @@
           <ul id="slide-actions"></ul>
         </section>
 
-        <div class="footer-note">
-          Astuces:
-          utilisez les flèches gauche/droite du clavier pour naviguer.
-          Cette page ne modifie pas <code>pmx-web</code>; elle pilote simplement les routes en direct sur <code>localhost:3002</code>.
+        <div class="footnote">
+          Cette version utilise uniquement des images locales dans le dossier <code>demo/assets</code>.
+          Vous pouvez la déposer telle quelle sur un serveur web statique.
         </div>
       </div>
     </aside>
 
-    <main class="viewer">
-      <div class="viewer-header">
-        <div class="viewer-meta">
-          <h2 class="viewer-title" id="viewer-title">Chargement…</h2>
-          <div class="viewer-subtitle" id="viewer-subtitle"></div>
-        </div>
-        <div class="buttons">
-          <a class="button-link secondary" id="refresh-btn" href="#" target="_blank" rel="noreferrer">Rafraîchir</a>
+    <main class="stage">
+      <div class="stage-head">
+        <div class="stage-meta">
+          <h2 class="stage-title" id="viewer-title">Chargement…</h2>
+          <div class="stage-subtitle" id="viewer-subtitle"></div>
         </div>
       </div>
-      <iframe id="live-frame" src="http://localhost:3002/fr"></iframe>
+      <div class="stage-body">
+        <div class="frame">
+          <img id="slide-image" alt="Capture PMX Web">
+        </div>
+      </div>
     </main>
   </div>
 
@@ -305,178 +312,189 @@
     const slides = [
       {
         title: "Accueil",
-        summary: "Commencer par la table de matières pour montrer que le nouveau PMX reprend la structure historique, mais dans une interface web claire.",
-        route: "http://localhost:3002/fr",
-        goal: "Présenter la page d'entrée comme un centre de navigation simple: DOSSIER, FORMUL, GLIVRE, HISTOIRE, PROFIL, RAPPORT, ROUTINE.",
+        summary: "Commencer par la table de matières pour montrer que la nouvelle interface reprend les grands blocs historiques de PMX.",
+        route: "/fr",
+        image: "assets/fr.png",
+        goal: "Présenter les 7 menus majeurs et positionner l'application comme une modernisation de la logique existante.",
         talk: [
-          "Le client retrouve les mêmes grands blocs métier que dans PMX.",
-          "La logique COBOL est conservée, mais la navigation est beaucoup plus lisible.",
-          "Chaque menu ouvre un espace opérationnel précis plutôt qu'un écran textuel XP."
+          "On retrouve la structure métier de PMX, mais dans une interface web claire.",
+          "Le client peut reconnaître son univers sans rester bloqué sur XP.",
+          "Chaque bloc correspond à une vraie fonction opérationnelle."
         ],
         actions: [
-          "Montrer les 7 cartes du menu principal.",
-          "Expliquer que l'ordre suit la logique du système historique.",
-          "Annoncer le parcours: dossier, formulaires, grand livre, histoire, profil, rapports, routine."
+          "Montrer DOSSIER, FORMUL, GLIVRE, HISTOIRE, PROFIL, RAPPORT, ROUTINE.",
+          "Expliquer que l'ordre suit la logique historique du système.",
+          "Annoncer le parcours de démonstration."
         ]
       },
       {
         title: "DOSSIER",
-        summary: "Le dossier est le coeur du système: client, police, solde, charges, paiements, sinistres et factures.",
-        route: "http://localhost:3002/fr/dossier",
-        goal: "Faire comprendre que PMX est un système centré sur le dossier assuré, pas sur la facture seule.",
+        summary: "Le dossier est le coeur du système: assuré, police, charges, paiements, sinistres et factures.",
+        route: "/fr/dossier",
+        image: "assets/fr-dossier.png",
+        goal: "Faire comprendre que PMX est centré sur le compte client plutôt que sur la facture seule.",
         talk: [
-          "Chaque dossier regroupe identité, police, activité financière et historique.",
-          "On peut chercher un assuré, voir le solde, puis entrer dans le détail.",
-          "C'est ici que la logique COBOL du compte client reste la plus fidèle."
+          "Le dossier regroupe l'identité, la police et l'activité financière.",
+          "C'est la partie la plus fidèle à la logique COBOL.",
+          "Charges et paiements s'attachent d'abord au dossier."
         ],
         actions: [
-          "Faire une recherche par nom ou no dossier.",
-          "Ouvrir un dossier existant.",
-          "Montrer rapidement les onglets: Info, Charges, Paiements, Sinistres, Factures."
+          "Montrer la liste des dossiers.",
+          "Expliquer qu'un dossier ouvre ensuite les onglets métier.",
+          "Insister sur le lien entre dossier, solde et activité."
         ]
       },
       {
         title: "FORMUL",
-        summary: "Les formulaires servent à produire les sorties métier: demandes, états de compte, étiquettes, fichier imprimé, factures.",
-        route: "http://localhost:3002/fr/formul",
-        goal: "Montrer la partie documents et impression, qui remplace les anciens écrans/formulaires COBOL.",
+        summary: "Les formulaires regroupent les sorties métier: état de compte, facture, demande, étiquettes, impression de fichier.",
+        route: "/fr/formul",
+        image: "assets/fr-formul.png",
+        goal: "Montrer que les anciens modules d'impression sont désormais organisés comme un vrai sous-menu web.",
         talk: [
-          "Ce menu modernise la logique d'impression historique.",
-          "Le client garde les documents métier clés sans rester prisonnier du vieux système.",
-          "La facture est un document produit par le workflow, pas l'objet principal du système."
+          "Le client garde ses documents métier essentiels.",
+          "On remplace les vieux écrans/formulaires par une navigation plus simple.",
+          "La facture reste un résultat du workflow."
         ],
         actions: [
-          "Ouvrir FORMUL.",
-          "Pointer les cartes Demande, État de compte, Étiquettes, Fichier, Facture.",
-          "Si utile, ouvrir ensuite la liste des factures."
+          "Montrer les cartes du sous-menu.",
+          "Mettre l'accent sur État de compte et Facture.",
+          "Préparer la transition vers la liste des factures."
         ]
       },
       {
         title: "Factures",
-        summary: "Cette liste présente les factures produites et permet d'ouvrir le document final.",
-        route: "http://localhost:3002/fr/factures",
-        goal: "Montrer qu'on arrive à un vrai résultat imprimable, même si la logique interne reste dossier -> charge -> facture.",
+        summary: "La liste des factures donne un résultat visible et concret à la logique d'émission.",
+        route: "/fr/factures",
+        image: "assets/fr-factures.png",
+        goal: "Rassurer le client sur la sortie finale: une vraie facture lisible, liée au dossier assuré.",
         talk: [
-          "La facture finale est accessible comme document clair et moderne.",
-          "Cela rassure le client: on ne perd pas la sortie métier qu'il connaît déjà.",
-          "On peut toujours relier la facture au dossier assuré."
+          "Même si la logique interne est dossier puis charge puis facture, l'utilisateur voit un document final clair.",
+          "Le lien avec le dossier assuré est conservé.",
+          "On reste compatible avec une logique d'impression ou d'export."
         ],
         actions: [
-          "Afficher la liste des factures.",
-          "Ouvrir une facture existante si disponible.",
-          "Revenir sur le lien entre facture et dossier."
+          "Montrer la liste des factures émises.",
+          "Expliquer que chaque ligne renvoie au dossier.",
+          "Relier ce menu au besoin comptable du client."
         ]
       },
       {
         title: "GLIVRE",
-        summary: "Le grand livre devient un sous-menu web lisible avec les fonctions comptables regroupées.",
-        route: "http://localhost:3002/fr/glivre",
-        goal: "Présenter le volet comptable sans entrer trop vite dans le détail technique.",
+        summary: "Le grand livre est structuré comme un bloc comptable séparé avec ses propres sous-fonctions.",
+        route: "/fr/glivre",
+        image: "assets/fr-glivre.png",
+        goal: "Montrer que la base de l'outil peut aller au-delà d'une simple interface commerciale.",
         talk: [
-          "On garde la séparation des fonctions de grand livre.",
-          "La structure historique est conservée, mais sous forme de cartes simples.",
-          "C'est important pour montrer que l'app peut évoluer vers une vraie base opérationnelle moderne."
+          "GLIVRE reprend la logique comptable du système historique.",
+          "Les fonctions sont regroupées comme sous-menu et non comme écran texte.",
+          "Cela prépare un futur plus robuste côté finance."
         ],
         actions: [
-          "Montrer les cartes Charte, Entrer, Édition, Balver, Bilan, Concilb.",
-          "Expliquer que ce bloc couvre la logique comptable/GL.",
-          "Ne pas trop s'attarder si le client est surtout orienté opération."
+          "Pointer les cartes du grand livre.",
+          "Expliquer que ce bloc reste volontairement séparé de l'opérationnel.",
+          "Ne pas s'attarder si le client parle surtout métier."
         ]
       },
       {
         title: "HISTOIRE",
-        summary: "Histoire permet d'expliquer la continuité du compte: charges et paiements triés comme historique opérationnel.",
-        route: "http://localhost:3002/fr/histoire",
-        goal: "Montrer le lien entre dossier, charges, paiements et balance.",
+        summary: "L'historique expose la chronologie du compte client: charges d'un côté, paiements de l'autre.",
+        route: "/fr/histoire",
+        image: "assets/fr-histoire.png",
+        goal: "Faire comprendre comment le solde se construit dans le temps.",
         talk: [
-          "Ici on voit la chronologie réelle du compte client.",
-          "C'est utile pour expliquer pourquoi PMX n'est pas juste un logiciel de factures.",
-          "Le client peut vérifier comment le solde s'est construit."
+          "Cette vue rend la logique PMX beaucoup plus compréhensible.",
+          "On voit d'où vient le solde: charges, paiements, agence.",
+          "C'est utile pour les explications client et pour le support interne."
         ],
         actions: [
-          "Saisir un no assurance connu.",
-          "Montrer la section Charges puis la section Paiements.",
-          "Relier cette vue à la question des recevables."
+          "Montrer les sections Charges et Paiements.",
+          "Relier cette vue à la notion de recevable.",
+          "Rappeler que la facture n'est qu'une conséquence de l'activité."
         ]
       },
       {
         title: "PROFIL",
-        summary: "Profil sert à filtrer le portefeuille selon compagnie, produit, type de facturation, activité, échéance ou solde.",
-        route: "http://localhost:3002/fr/profil",
-        goal: "Positionner l'app comme un outil de pilotage, pas seulement de saisie.",
+        summary: "Profil sert à filtrer le portefeuille par compagnie, produit, type de facturation, activité, échéance ou solde.",
+        route: "/fr/profil",
+        image: "assets/fr-profil.png",
+        goal: "Positionner l'application comme un outil de pilotage et pas seulement de saisie.",
         talk: [
-          "Ce menu aide à segmenter les dossiers.",
-          "Le courtier peut retrouver rapidement les comptes à surveiller.",
-          "Cela remplace plusieurs filtres et listes historiques du système COBOL."
+          "On peut retrouver rapidement des segments de portefeuille.",
+          "Cette vue aide au suivi commercial et administratif.",
+          "Elle remplace plusieurs recherches laborieuses du système historique."
         ],
         actions: [
           "Montrer les filtres disponibles.",
-          "Lancer une recherche simple.",
-          "Ouvrir un résultat vers le dossier."
+          "Expliquer qu'un résultat renvoie directement au dossier.",
+          "Utiliser cette vue pour parler de gestion portefeuille."
         ]
       },
       {
         title: "RAPPORT",
-        summary: "Les rapports regroupent les échéances, rappels, recevables, sommaires et bordereaux.",
-        route: "http://localhost:3002/fr/rapport",
-        goal: "Montrer les vues de contrôle que le client et son comptable utilisent réellement.",
+        summary: "Les rapports regroupent échéances, rappels, recevables, sommaires et bordereaux.",
+        route: "/fr/rapport",
+        image: "assets/fr-rapport.png",
+        goal: "Montrer la valeur de gestion: suivi des comptes, du portefeuille et des rapports métier.",
         talk: [
-          "C'est ici que la valeur opérationnelle devient visible au niveau gestion.",
-          "Les recevables et rappels sont particulièrement importants pour la migration.",
-          "On peut progressivement remplacer les rapports PMX les plus utilisés."
+          "C'est ici que la partie administrative et de contrôle devient visible.",
+          "Recevables et rappels seront souvent les plus importants pour la migration.",
+          "Cette structure est prête à remplacer progressivement les rapports PMX les plus utilisés."
         ],
         actions: [
-          "Ouvrir le sous-menu RAPPORT.",
-          "Pointer Recevables, Rappels, Échéances, Sommaire, Bordereaux.",
-          "Si le client est comptable, insister sur Recevables."
+          "Montrer le sous-menu Rapport.",
+          "Insister sur Recevables et Rappels.",
+          "Présenter cela comme la couche de supervision."
         ]
       },
       {
         title: "ROUTINE",
-        summary: "Routine présente les procédures journalières: journal de facturation, saisie de paiement et rappels.",
-        route: "http://localhost:3002/fr/routine",
-        goal: "Relier les opérations du quotidien à ce que l'équipe fait aujourd'hui dans PMX/XP.",
+        summary: "Routine regroupe les procédures journalières: journal de facturation, saisie de paiement et rappels.",
+        route: "/fr/routine",
+        image: "assets/fr-routine.png",
+        goal: "Raccrocher la démonstration aux gestes quotidiens des utilisateurs PMX.",
         talk: [
-          "C'est l'équivalent moderne des procédures journalières PMX.",
-          "On y voit la facturation, la saisie de paiement et les rappels.",
-          "Ce menu est souvent le plus concret pour convaincre un utilisateur historique."
+          "C'est l'équivalent moderne des procédures journalières historiques.",
+          "Facturation, paiement et rappel sont regroupés dans un point d'entrée simple.",
+          "C'est souvent le menu le plus parlant pour les équipes internes."
         ],
         actions: [
-          "Afficher les 3 cartes.",
-          "Dire que c'est le point d'entrée naturel pour l'opération quotidienne.",
-          "Enchaîner sur paiement si le client veut comprendre comment un reçu affecte le solde."
+          "Montrer les trois cartes.",
+          "Expliquer que c'est le point d'entrée du travail quotidien.",
+          "Introduire ensuite la saisie de paiement."
         ]
       },
       {
         title: "Paiement",
-        summary: "La saisie de paiement illustre bien la logique PMX: paiement sur le compte client, puis effet sur le recevable.",
-        route: "http://localhost:3002/fr/routine/paiement",
-        goal: "Expliquer pourquoi le logiciel est centré sur le compte assuré et non seulement sur la facture.",
+        summary: "La saisie de paiement montre la logique compte-client: le paiement agit sur le dossier avant le reçu final.",
+        route: "/fr/routine/paiement",
+        image: "assets/fr-routine-paiement.png",
+        goal: "Illustrer la logique PMX de paiement sur compte plutôt que paiement attaché uniquement à une facture.",
         talk: [
-          "Le paiement s'applique au compte client.",
-          "Le reçu et le solde découlent ensuite du workflow.",
-          "C'est un bon moment pour parler des écarts entre PMX historique et expérience moderne."
+          "Le paiement s'applique d'abord au compte client.",
+          "Le reçu et le solde en découlent ensuite.",
+          "C'est une des différences clés avec un logiciel de facturation plus simple."
         ],
         actions: [
-          "Montrer les champs de saisie de paiement.",
-          "Expliquer le lien avec le dossier et les recevables.",
-          "Mentionner que cette logique peut être simplifiée selon les besoins du client."
+          "Montrer les champs de saisie.",
+          "Parler du lien entre paiement, reçu et recevable.",
+          "Utiliser cet écran pour poser les bonnes questions métier au client."
         ]
       },
       {
         title: "Conclusion",
-        summary: "Terminer en résumant que l'app conserve la logique métier de PMX, mais la rend beaucoup plus démontrable et évolutive.",
-        route: "http://localhost:3002/fr",
-        goal: "Laisser une image claire: même métier, meilleure expérience, base prête pour migration et modernisation.",
+        summary: "Terminer en ramenant le client au message principal: même logique métier, meilleure expérience, base prête pour évoluer.",
+        route: "/fr",
+        image: "assets/fr.png",
+        goal: "Laisser une image claire de modernisation plutôt qu'un simple lifting visuel.",
         talk: [
-          "On garde les grands menus et la logique de métier que l'équipe connaît déjà.",
-          "On supprime la dépendance à XP et aux écrans vieillissants.",
-          "Le prochain travail consiste à valider le flux réel du client et fermer les derniers écarts."
+          "L'application conserve les grands blocs du métier PMX.",
+          "Elle retire la dépendance à XP et clarifie les workflows.",
+          "La prochaine étape est de valider précisément les flux réels du client."
         ],
         actions: [
-          "Revenir au menu principal.",
+          "Revenir à l'écran d'accueil.",
           "Récapituler les menus montrés.",
-          "Demander quels blocs sont critiques pour le client au jour 1."
+          "Demander quels blocs sont critiques pour le jour 1."
         ]
       }
     ];
@@ -490,11 +508,9 @@
     const goalEl = document.getElementById('slide-goal');
     const talkEl = document.getElementById('slide-talk');
     const actionsEl = document.getElementById('slide-actions');
-    const frameEl = document.getElementById('live-frame');
+    const imageEl = document.getElementById('slide-image');
     const viewerTitleEl = document.getElementById('viewer-title');
     const viewerSubtitleEl = document.getElementById('viewer-subtitle');
-    const openBtn = document.getElementById('open-btn');
-    const refreshBtn = document.getElementById('refresh-btn');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
 
@@ -513,20 +529,18 @@
       summaryEl.textContent = slide.summary;
       indexEl.textContent = `Étape ${index + 1} / ${slides.length}`;
       routeEl.textContent = slide.route;
-      routeEl.href = slide.route;
-      openBtn.href = slide.route;
-      refreshBtn.href = slide.route;
       goalEl.textContent = slide.goal;
       fillList(talkEl, slide.talk);
       fillList(actionsEl, slide.actions);
+      imageEl.src = slide.image;
+      imageEl.alt = `${slide.title} — capture PMX`;
       viewerTitleEl.textContent = slide.title;
-      viewerSubtitleEl.textContent = slide.route.replace('http://', '');
-      frameEl.src = slide.route;
+      viewerSubtitleEl.textContent = slide.route;
       prevBtn.disabled = index === 0;
       nextBtn.disabled = index === slides.length - 1;
       prevBtn.style.opacity = index === 0 ? 0.45 : 1;
       nextBtn.style.opacity = index === slides.length - 1 ? 0.45 : 1;
-      document.title = `${slide.title} — PMX Web Demo`;
+      document.title = `${slide.title} — PMX Demo Client`;
     }
 
     prevBtn.addEventListener('click', () => {
